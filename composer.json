@@ -1,0 +1,30 @@
+{
+  "name": "fonqing/wing",
+  "description": "Fast development depend on thinkphp8",
+  "version": "1.0.0",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Eric Wang",
+      "email": "fonqing@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-redis": "*",
+    "ext-curl": "*",
+    "ext-openssl": "*"
+  },
+  "require-dev": {
+    "topthink/framework": "^8.0"
+  },
+  "suggest": {
+    "ext-redis": "Required for Hign performance cahe"
+  },
+  "autoload": {
+    "psr-4": {
+      "wing\\": "src/"
+    }
+  }
+}
