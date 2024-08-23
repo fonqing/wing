@@ -57,6 +57,24 @@ class StringPlus
         return strpos($haystack, $needle) !== false;
     }
 
+    public static function strStartsWith(string $haystack, string $needle): bool
+    {
+        if (function_exists('str_starts_with')) {
+            return str_starts_with($haystack, $needle);
+        } else {
+            return substr($haystack, 0, strlen($needle)) === $needle;
+        }
+    }
+
+    public static function strEndsWith(string $haystack, string $needle): bool
+    {
+        if (function_exists('str_ends_with')) {
+            return str_ends_with($haystack, $needle);
+        } else {
+            return substr($haystack, -strlen($needle)) === $needle;
+        }
+    }
+
     /**
      * Generate unique id
      *

@@ -61,9 +61,6 @@ abstract class BaseController
      */
     protected bool $autoQueryFilter = true;
 
-    /**
-     * @throws ModelNotFoundException
-     */
     public function __construct()
     {
         $this->request = request();
@@ -87,6 +84,9 @@ abstract class BaseController
 
 
     // 初始化
+    /**
+     * @throws BusinessException
+     */
     protected function initialize(): void
     {
         if (!empty($this->modelName)) {
@@ -107,6 +107,7 @@ abstract class BaseController
      *
      * @param mixed $class
      * @param string $name
+     * @throws BusinessException
      */
     protected function setModel(mixed $class, string $name = 'default'): void
     {

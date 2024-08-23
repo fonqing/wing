@@ -2,8 +2,10 @@
 
 namespace wing\core\traits;
 
+use think\facade\Config;
 use wing\core\BaseController;
 use wing\exception\BusinessException;
+use wing\libs\StringPlus;
 
 /**
  * @mixin BaseController
@@ -38,9 +40,9 @@ trait Authorize
             return true;
         }
         // Get module/controller/action
-        $module = strtolower($this->request->app ?: 'default');
-        $contr = $this->normalizeController($this->request->controller);
-        $action = strtolower($this->request->action ?: 'index');
+        $module = strtolower(app('http')->getName() ?: Config::get('app.default_module', 'admin'));
+        $contr = $this->normalizeController($this->request->controller(true));
+        $action = strtolower($this->request->action(true) ?: 'index');
 
         // Parse action and get params
         $result = $this->parseAction($action);
@@ -103,9 +105,9 @@ trait Authorize
         if (empty($contr)) {
             return 'index';
         }
-        if (str_contains($contr, '\\')) {
+        if (StringPlus::strContains($contr, '\\')) {
             $contr = substr($contr, strrpos($contr, '\\') + 1);
-            if (str_ends_with($contr, 'controller')) {
+            if (StringPlus::strEndsWith($contr, 'controller')) {
                 return substr($contr, 0, -10);
             }
         }
@@ -137,7 +139,7 @@ trait Authorize
     private function matchParams(array $params): bool
     {
         foreach ($params as $key => $value) {
-            $has = $this->request->input($key, '');
+            $has = $this->request->param($key);
             if ($has !== $value) {
                 return false;
             }

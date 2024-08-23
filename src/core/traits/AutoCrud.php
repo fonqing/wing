@@ -168,17 +168,6 @@ trait AutoCrud
     }
 
     /**
-     * 输出到新增视图的数据捕获
-     * @param        $data
-     * @return mixed
-     */
-    public function addAssign($data): mixed
-    {
-        $data['lists'] = [];
-        return $data;
-    }
-
-    /**
      * 新增数据插入数据库前数据捕获（注意：在数据验证之前）
      * @param        $data
      * @return mixed
@@ -307,7 +296,7 @@ trait AutoCrud
             }
             try {
                 $model = $this->getModel();
-            } catch (ModelNotFoundException $e) {
+            } catch (BusinessException $e) {
                 return $this->error($e->getMessage());
             }
             // 验证通过
@@ -328,7 +317,7 @@ trait AutoCrud
             }
             return $this->success($pkValue);
         }
-        return $this->success($this->addAssign([]));
+        return $this->success([]);
     }
 
     /**
@@ -389,15 +378,14 @@ trait AutoCrud
                     return $this->error($errorMessage);
                 }
             }
+            $data = $model->findOrEmpty($pkValue);
+            if($data->isEmpty()) {
+                return $this->error('要更新的数据不存在');
+            }
             // 验证通过
             Db::startTrans();
             try {
-                $data = $model->find($pkValue);
-                if (empty($fields)) {
-                    $model->save($editData);
-                } else {
-                    $data->allowField($fields)->save($editData);
-                }
+                $data->save($editData);
                 if (is_string($pk)) {
                     $pkValue = $pkValue[$pk];
                 }
@@ -411,7 +399,7 @@ trait AutoCrud
         }
         $data = $model->findOrEmpty($pkValue);
         if ($data->isEmpty()) {
-            return $this->error("无法加载更新数据");
+            return $this->error("要更新的数据不村在");
         }
         $res = [];
         foreach ($pkValue as $key => $value) {
@@ -483,10 +471,9 @@ trait AutoCrud
                 return $this->error('参数有误，缺少' . $key);
             }
         }
-        try {
-            $data = $model->findOrFail($pkValue);
-        } catch (DataNotFoundException | DbException $e) {
-            return $this->error($e->getMessage());
+        $data = $model->findOrEmpty($pkValue);
+        if ($data->isEmpty()) {
+            return $this->error('要查看的信息不存在');
         }
         return $this->success($this->beforeDetail($data));
     }
