@@ -52,12 +52,12 @@ trait Authorize
         if ($this->isAllowed($contr, $action, $this->anonymousRules[$module] ?? $this->anonymousRules)) {
             return true;
         }
-        // Check authorize whitelists
-        if ($this->isAllowed($contr, $action, $this->uncheckRules[$module] ?? $this->uncheckRules)) {
-            return true;
-        }
         // Check login
         if ($this->session->isLogin()) {
+            // Check authorize whitelists
+            if ($this->isAllowed($contr, $action, $this->uncheckRules[$module] ?? $this->uncheckRules)) {
+                return true;
+            }
             // Get all user privileges
             $rules = $this->session->getPrivileges();
             // Check if the action is in rules

@@ -1,7 +1,7 @@
 {
   "name": "fonqing/wing",
   "description": "Fast development depend on thinkphp8",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "library",
   "license": "MIT",
   "authors": [
@@ -20,7 +20,7 @@
     "topthink/framework": "^8.0"
   },
   "suggest": {
-    "ext-redis": "Required for Hign performance cahe"
+    "ext-redis": "Required for Hign performance cache"
   },
   "autoload": {
     "psr-4": {

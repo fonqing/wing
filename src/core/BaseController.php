@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace wing\core;
 
-use think\Request;
-use think\Response;
+use think\{Request, Response, App};
 use think\model\Collection;
 use wing\exception\BusinessException;
 
@@ -18,6 +17,12 @@ abstract class BaseController
      * @var Request
      */
     protected Request $request;
+
+    /**
+     * 应用实例
+     * @var App
+     */
+    protected App $app;
 
     /**
      * @var UserSession 会话用户
@@ -50,7 +55,6 @@ abstract class BaseController
         'name' => '', // 导出文件名
         'title' => '', // 导出表格标题
         'columns' => [], // 字段配置
-        'fast' => false // 大量数据高性能导出（需要安装 php-xlswriter 扩展）
     ];
 
     /**
@@ -60,9 +64,10 @@ abstract class BaseController
      */
     protected bool $autoQueryFilter = true;
 
-    public function __construct()
+    public function __construct(App $app)
     {
-        $this->request = request();
+        $this->app = $app;
+        $this->request = $this->app->request;
         $this->session = new UserSession();
         $this->initialize();
     }
@@ -88,7 +93,7 @@ abstract class BaseController
      */
     protected function initialize(): void
     {
-        if (!empty($this->modelName)) {
+        if (!empty($this->modelName) && class_exists($this->modelName)) {
             $this->setModel($this->modelName);
         }
         // 初始化钩子
@@ -157,9 +162,6 @@ abstract class BaseController
         $model = $this->getModel($name);
         if (method_exists($model, 'getExportConfig')) {
             $this->exportConfig = $model->getExportConfig();
-            if (!isset($this->exportConfig['fast'])) {
-                $this->exportConfig['fast'] = false;
-            }
         }
     }
 
@@ -246,5 +248,29 @@ abstract class BaseController
             }
         }
         return $res;
+    }
+
+    /**
+     * 直接从请求中获取安全的 值大于0的int数组
+     *
+     * @param  string $name
+     * @return array
+     */
+    public function getIntArray(string $name): array
+    {
+        $data = $this->request->param($name);
+        if (empty($data)) {
+            return [];
+        }
+        if (is_string($data)) {
+            $data = explode(',', $data);
+        }
+        if (is_array($data)) {
+            return array_unique(array_filter($data, function ($value) {
+                $value = (int) $value;
+                return $value > 0;
+            }));
+        }
+        return [];
     }
 }
