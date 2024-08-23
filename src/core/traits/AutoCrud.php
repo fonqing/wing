@@ -8,10 +8,6 @@ use wing\exception\BusinessException;
 use think\facade\{Db, Log};
 use wing\core\{BaseModel, BaseController};
 use think\{Validate, Request, Response};
-use think\db\exception\DbException;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\ModelNotFoundException;
-
 /**
  * @property Request $request
  * @mixin BaseController

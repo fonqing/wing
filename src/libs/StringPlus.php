@@ -144,6 +144,6 @@ class StringPlus
                 }
             }
         }
+        return null;
     }
-
 }

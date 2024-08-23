@@ -36,13 +36,13 @@ class UserSession
     {
         if ($user) {
             if (!($user instanceof BaseModel)) {
-                throw new BusinessException("Model must be an instance of BaseModel");
+                throw new BusinessException("Model must be an instance of \\wing\\core\\BaseModel");
             }
             if (!method_exists($user, 'getPrivileges')) {
-                throw new BusinessException("Auth Model must implements \\aoma\\fast\\UserInterface");
+                throw new BusinessException("Auth Model must implements \\wing\\core\\UserInterface");
             }
             if (!method_exists($user, 'isSuperAdmin')) {
-                throw new BusinessException("Auth Model must implements \\aoma\\fast\\UserInterface");
+                throw new BusinessException("Auth Model must implements \\wing\\core\\UserInterface");
             }
             $this->user = $user;
             $this->userInfo = $user->toArray();

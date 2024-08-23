@@ -15,12 +15,6 @@ use RedisException;
  */
 class RedisPlus extends \think\cache\driver\Redis
 {
-
-    /**
-     * @var Redis
-     */
-    public $handler;
-
     /**
      * Put one or more member into Set
      *
@@ -166,11 +160,8 @@ class RedisPlus extends \think\cache\driver\Redis
     /**
      * Execute a function only once in a period of time
      *
-     * 在单机部署情况且高并发争夺情况下，保证一个函数只执行一次；
      * Used for single-machine deployment or Redis
-     * 注意匿名函数必须返回值 本函数将返回匿名函数的返回值
      * The callback function must return a value, and this function will return the return value of the anonymous function.
-     * 函数内注意捕获异常，并记录日志
      * Note that exceptions must be caught and logged within the function.
      *
      *

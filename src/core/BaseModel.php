@@ -279,23 +279,4 @@ class BaseModel extends Model
             }
         }
     }
-
-    /**
-     * @param     mixed     $data
-     * @param  Request $request
-     * @return array
-     */
-    public static function beforeCreate($data, Request $request): array
-    {
-        return $data;
-    }
-
-    /**
-     * @param $pk
-     * @param $data
-     * @return void
-     */
-    public static function afterCreate($pk, $data): void
-    {
-    }
 }

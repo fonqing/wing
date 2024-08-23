@@ -5,7 +5,6 @@ namespace wing\core;
 
 use think\Request;
 use think\Response;
-use think\db\exception\ModelNotFoundException;
 use think\model\Collection;
 use wing\exception\BusinessException;
 
