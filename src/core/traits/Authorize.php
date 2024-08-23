@@ -16,7 +16,7 @@ trait Authorize
      * @var array $anonymousRules 匿名可访问的 action
      */
     protected array $anonymousRules = [
-        'default' => [
+        'admin' => [
             'user/login',
             'user/logout',
         ]
@@ -80,7 +80,7 @@ trait Authorize
      * @param string $module
      * @return bool
      */
-    public function hasPrivilege(string $ca, array $params = [], string $module = 'default'): bool
+    public function hasPrivilege(string $ca, array $params = [], string $module = 'admin'): bool
     {
         if ($this->session->isSuperAdmin()) {
             return true;

@@ -99,6 +99,18 @@ class StringPlus
     }
 
     /**
+     * join array elements with a specific separator
+     * 
+     * @param array $args
+     * @param string $separator
+     * @return string
+     */
+    public static function join(array $args, string $separator = ''): string
+    {
+        return implode($separator, $args);
+    }
+
+    /**
      * Split string into to parts by a specific character
      *
      * @param string $string
@@ -120,6 +132,14 @@ class StringPlus
         ];
     }
 
+    /**
+     * Do callback when condition is true
+     * 
+     * @param mixed $condition
+     * @param callable $yes
+     * @param mixed $no
+     * @return mixed
+     */
     public static function doWhen(mixed $condition, callable $yes, mixed $no = null)
     {
         if (is_callable($condition) || $condition instanceof Closure) {
@@ -129,6 +149,13 @@ class StringPlus
             (($no && is_callable($no)) ? call_user_func($no) : null);
     }
 
+    /**
+     * Get the first not empty value of an array or a specific key of an array
+     * 
+     * @param array $array
+     * @param string $key
+     * @return mixed
+     */
     public static function getNotEmptyValue(array $array, string $key = '')
     {
         if (empty($key)) {
