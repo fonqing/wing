@@ -68,7 +68,13 @@ class UserSession
      */
     public function isLogin(): bool
     {
-        return isset($this->user) && $this->user;
+        if(!isset($this->user) || !$this->user){
+            return false;
+        }
+        if(method_exists($this->user, 'isEmpty')) {
+            return !$this->user->isEmpty();
+        }
+        return false;
     }
 
     /**
