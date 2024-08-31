@@ -2,15 +2,17 @@
 namespace wing\core;
 
 use wing\libs\StringPlus;
-use think\Request;
+use think\facade\{Request, Cache,Validate};
 use think\db\Query;
-use think\facade\Cache;
-use think\facade\Validate;
 use think\Model;
 
 /**
- * @method static where(mixed $field, $op = null, $condition = null)
+ * Scope methods for BaseModel
+ *
  * @method static queryFilter() static
+ * @method static byTimeStart(int|string $start, mixed $field = '') static
+ * @method static byTimeRange(string $field, array $range, bool $withFieldCheck = false) static
+ * @method static byNumberRange(string $field, array $range) static
  */
 class BaseModel extends Model
 {
@@ -23,7 +25,7 @@ class BaseModel extends Model
     public static array $fields = [
         'create' => [],//array or string joined by comma
         'update' => [],
-        'index' => [],
+        'index'  => [],
         'search' => [],
     ];
 
@@ -73,10 +75,9 @@ class BaseModel extends Model
     /**
      * 获取模型字段与字段注释的键值对
      *
-     * @return array
-     * @throws \Throwable
+     * @return mixed
      */
-    public static function getFieldLabels(): array
+    public static function getFieldLabels(): mixed
     {
         $model = new static();
         $table = $model->getTable();
@@ -127,8 +128,7 @@ class BaseModel extends Model
     /**
      * 适用于不同的模型有不同的时间字段的情况下，进行开始时间大于等于条件查询
      *
-     * @alias byTimeStart
-     *
+     * @alias byTimeStart(int|string $start, mixed $field = '')
      * @param  Query      $query
      * @param  int|string $start 开始时间字符串或者时间戳
      * @param  mixed      $field 附加的时间字段
@@ -139,11 +139,18 @@ class BaseModel extends Model
         if (!is_numeric($start)) {
             $start = strtotime($start);
         }
-        $list = ['approval_time', 'update_time', 'create_time', 'created_at', 'updated_at'];
-        if (!empty($field) && (is_array($field) || is_string($field))) {
-            $fields = is_array($field) ? $field : [$field];
-            array_unshift($list, ...$fields);
+        // If field parameter is not empty, use given field to query directly.
+        if (!empty($field) && is_string($field)) {
+            $query->whereTime($field, '>=', $start);
+            return;
         }
+        // Normal case, use common time fields to query.
+        $list = ['approval_time', 'update_time', 'create_time', 'created_at', 'updated_at'];
+        if (!empty($field) && is_array($field) ) {
+            // Prepend given field to common time fields.
+            array_unshift($list, ...$field);
+        }
+        // get the first available field in the list
         $cond = $this->hasField($list);
         if (!empty($cond)) {
             $query->whereTime($cond, '>=', $start);
@@ -153,6 +160,7 @@ class BaseModel extends Model
     /**
      * 基于指定字段的时间段查询
      *
+     * @alias byTimeRange(string $field, array $range, bool $withFieldCheck = false)
      * @param  Query  $query
      * @param  string $field          时间字段名
      * @param  mixed  $range          起始时间数组
@@ -178,6 +186,7 @@ class BaseModel extends Model
     /**
      * 针对 float integer double decimal 字段范围查询
      *
+     * @alias byNumberRange(string $field, array $range)
      * @param  Query  $query
      * @param  string $field
      * @param  mixed  $range
@@ -234,29 +243,64 @@ class BaseModel extends Model
     {
         $fields = static::$fields['search'] ?? [];
         if (!empty($fields)) {
-            $query = request()->all();
+            $query = Request::param();
             foreach ($fields as $field => $rule) {
                 $value = $query[$field] ?? '';
-                if (empty($value)) {
+                if (empty($value) && 0 !== $value) {
                     continue;
                 }
                 switch ($rule) {
                     case 'equal':
                     case 'eq':
                     case '=':
-                        if (!is_string($value) && !is_numeric($value)) {
-                            break;
+                        if (is_string($value) || is_numeric($value)) {
+                            $model->where($field, $value);
                         }
-                        $model->where($field, $query[$field]);
                         break;
                     case 'like':
                         if (is_string($value)) {
-                            $model->whereLike($field, '%' . $query[$field] . '%');
+                            $value = StringPlus::htmlEncode($value);
+                            $model->whereLike($field, '%' . $value . '%');
                         }
                         break;
-                    case 'datetime':
-                        if (is_array($value) && 2 === sizeof($value)) {
+                    case 'time_range':
+                        if (is_array($value) && 2 === count($value)) {
                             $model->whereBetweenTime($field, $value[0], $value[1]);
+                        }
+                        break;
+                    case 'gt':
+                        $value = floatval($value);
+                        $model->where($field, '>', $value);
+                        break;
+                    case 'gte':
+                        $value = floatval($value);
+                        $model->where($field, '>=', $value);
+                        break;
+                    case 'lt':
+                        $value = floatval($value);
+                        $model->where($field, '<', $value);
+                        break;
+                    case 'lte':
+                        $value = floatval($value);
+                        $model->where($field, '<=', $value);
+                        break;
+                    case 'year':
+                        $model->whereYear($field, date('Y', strtotime($value)));
+                        break;
+                    case 'day':
+                        $model->whereDay($field, $value);
+                        break;
+                    case 'number_range':
+                        if (is_array($value) && 2 === count($value)) {
+                            $value[0] = floatval($value[0]);
+                            $value[1] = floatval($value[1]);
+                            $min = min($value);
+                            $max = max($value);
+                            if($min === $max){
+                                $model->where($field, $value[0]);
+                            } else {
+                                $model->whereBetween($field, [$min, $max]);
+                            }
                         }
                         break;
                     case 'time_start':
@@ -269,7 +313,7 @@ class BaseModel extends Model
                         if (is_array($value)) {
                             $model->whereIn($field, $value);
                         }
-                    // no break
+                        break;
                     case 'ex':
                         if (is_array($value)) {
                             $model->whereNotIn($field, $value);
