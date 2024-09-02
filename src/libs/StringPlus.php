@@ -173,4 +173,9 @@ class StringPlus
         }
         return null;
     }
+
+    public static function joinPath(string $path, string $append): string
+    {
+        return rtrim($path, '/'). '/'. ltrim($append, '/');
+    }
 }

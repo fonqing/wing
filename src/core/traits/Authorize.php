@@ -12,20 +12,6 @@ use wing\libs\StringPlus;
  */
 trait Authorize
 {
-    /**
-     * @var array $anonymousRules 匿名可访问的 action
-     */
-    protected array $anonymousRules = [
-        'admin' => [
-            'user/login',
-            'user/logout',
-        ]
-    ];
-
-    /**
-     * @var array $uncheckRules 不需要检查权限的 action
-     */
-    protected array $uncheckRules = [];
 
     /**
      * Authorize the action.

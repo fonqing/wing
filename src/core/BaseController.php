@@ -35,6 +35,21 @@ abstract class BaseController
     protected array $__models__ = [];
 
     /**
+     * @var array $anonymousRules 匿名可访问的 action
+     */
+    protected array $anonymousRules = [
+        'admin' => [
+            'user/login',
+            'user/logout',
+        ]
+    ];
+
+    /**
+     * @var array $uncheckRules 不需要检查权限的 action
+     */
+    protected array $uncheckRules = [];
+
+    /**
      * Request
      *
      * @var array
@@ -64,6 +79,9 @@ abstract class BaseController
      */
     protected bool $autoQueryFilter = true;
 
+    /**
+     * @throws BusinessException
+     */
     public function __construct(App $app)
     {
         $this->app = $app;
@@ -150,6 +168,16 @@ abstract class BaseController
             throw new BusinessException('model not set');
         }
         return $this->__models__[$name];
+    }
+
+    protected function setAnonymousRules(array $rules): void
+    {
+        $this->anonymousRules = $rules;
+    }
+
+    protected function setUncheckRules(array $rules): void
+    {
+        $this->uncheckRules = $rules;
     }
 
     /**
