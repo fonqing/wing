@@ -10,7 +10,7 @@ interface UserInterface
      * @param string $module
      * @return array
      */
-    public function getPrivileges(string $module = 'default'): array;
+    public function getPrivileges(string $module = ''): array;
 
     /**
      * 管理员模型或用户模型必须实现此接口

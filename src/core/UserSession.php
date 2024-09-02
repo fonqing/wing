@@ -125,8 +125,11 @@ class UserSession
      * @param string $module
      * @return array
      */
-    public function getPrivileges(string $module = 'default'): array
+    public function getPrivileges(string $module = ''): array
     {
+        if(empty($module)) {
+            return $this->privileges;
+        }
         return $this->privileges[$module] ?? [];
     }
 }

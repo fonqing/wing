@@ -156,7 +156,7 @@ class StringPlus
      * @param string $key
      * @return mixed
      */
-    public static function getNotEmptyValue(array $array, string $key = '')
+    public static function getNotEmptyValue(array $array, string $key = ''): mixed
     {
         if (empty($key)) {
             foreach ($array as $v) {

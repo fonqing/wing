@@ -28,7 +28,7 @@ trait AutoCrud
     }
 
     /**
-     * 读取模型信息
+     * Read model config & info
      *
      * @param string $key
      * @param mixed|string $default
@@ -47,6 +47,8 @@ trait AutoCrud
     }
 
     /**
+     * Get model table fields
+     *
      * @param string $name
      * @return array
      * @throws BusinessException
@@ -58,6 +60,8 @@ trait AutoCrud
     }
 
     /**
+     * Set model table fields
+     *
      * @param string $name
      * @param mixed $fields
      * @throws BusinessException
@@ -69,6 +73,8 @@ trait AutoCrud
     }
 
     /**
+     * Get validation message template
+     *
      * @return array
      * @throws BusinessException
      */
@@ -79,6 +85,8 @@ trait AutoCrud
     }
 
     /**
+     * Get model validation rules
+     *
      * @param $name
      * @return array
      * @throws BusinessException
@@ -90,6 +98,8 @@ trait AutoCrud
     }
 
     /**
+     * Set model validation rules
+     *
      * @param string $name
      * @param $rules
      * @throws BusinessException
@@ -101,6 +111,8 @@ trait AutoCrud
     }
 
     /**
+     * Normalize model fields in model definition
+     *
      * @param  mixed    $input
      * @return string[]
      */
@@ -118,13 +130,22 @@ trait AutoCrud
         return [];
     }
 
+    /**
+     * Before model query hook
+     *
+     * used to add with query, scope filter, append data to query
+     *
+     * @param $model
+     * @return mixed
+     */
     protected function indexQuery($model)
     {
         return $model;
     }
 
     /**
-     * 分页数据捕获，用于追加数据
+     * Query result row callback
+     *
      * @param        $item
      * @param        $key
      * @return mixed
@@ -135,7 +156,8 @@ trait AutoCrud
     }
 
     /**
-     * 输出到列表视图的数据捕获
+     * After query result callback
+     *
      * @param        $data
      * @return mixed
      * @throws BusinessException|Exception
@@ -164,7 +186,10 @@ trait AutoCrud
     }
 
     /**
-     * 新增数据插入数据库前数据捕获（注意：在数据验证之前）
+     * Model create hook before validation
+     * In some scene you may be want to
+     * add some data to create data before validation in controller
+     *
      * @param        $data
      * @return mixed
      */
@@ -174,7 +199,7 @@ trait AutoCrud
     }
 
     /**
-     * 输出到编辑视图的数据捕获
+     * A callback that where query the model data before load it into view
      * @param        $data
      * @return mixed
      */
@@ -184,7 +209,7 @@ trait AutoCrud
     }
 
     /**
-     * 编辑数据插入数据库前数据捕获（注意：在数据验证之前）
+     * A callback before update model and validation behavior
      * @param        $data
      * @return mixed
      */

@@ -174,16 +174,6 @@ abstract class BaseController
         return $this->__models__[$name];
     }
 
-    protected function setAnonymousRules(array $rules): void
-    {
-        $this->anonymousRules = $rules;
-    }
-
-    protected function setUncheckRules(array $rules): void
-    {
-        $this->uncheckRules = $rules;
-    }
-
     /**
      * @param string $name
      * @return void
