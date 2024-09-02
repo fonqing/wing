@@ -118,6 +118,10 @@ abstract class BaseController
         if (method_exists($this, 'setup')) {
             $this->setup();
         }
+        // 访问授权前置钩子
+        if (method_exists($this, 'beforeAuthorize')) {
+            $this->beforeAuthorize();
+        }
         // 检查授权
         if (method_exists($this, 'authorize')) {
             $this->authorize();
