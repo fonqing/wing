@@ -235,8 +235,30 @@ class BaseModel extends Model
     }
 
     /**
-     * 自动根据 query string 进行查询
+     * 不触发模型事件保存
      *
+     * @return bool
+     */
+    public function saveWithoutEvent(): bool
+    {
+        $this->withEvent(false);
+        $result = $this->save();
+        $this->withEvent(true);
+        return $result;
+    }
+
+    /**
+     * @alias saveWithoutEvent()
+     * @return bool
+     */
+    public function saveNoEvent(): bool
+    {
+        return $this->saveWithoutEvent();
+    }
+
+    /**
+     * 自动根据 query string 进行查询
+     * @alias queryFilter()
      * @param Query $model
      */
     public function scopeQueryFilter(Query $model): void
