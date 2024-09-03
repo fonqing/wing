@@ -1,6 +1,6 @@
 # wing
 
-Fast developement library for Thinkphp8
+Fast development library for Thinkphp8
 
 # requirements
 
@@ -13,16 +13,15 @@ Fast developement library for Thinkphp8
 composer require fonqing/wing
 ```
 
-## 使用注意事项
+## Usage
 
-- 使用本类库只能配合 thinkphp8.0 使用
-- 控制器继承 `\wing\core\BaseController` 类
-- 模型继承 `\wing\core\BaseModel` 类
-- 控制器内通过 `use \wing\core\traits\AutoCrud;` 启用自动 CRUD 操作
-- 控制器内通过 `use \wing\core\traits\Authorize;` 启用权限控制
-- 控制器内通过 `setup`方法进行必要的配置
-
-## 控制器示例
+- This library is only for thinkphp8.0
+- Your controller should extend `\wing\core\BaseController`
+- Your model should extend `\wing\core\BaseModel`
+- Use `use \wing\core\traits\AutoCrud;` to enable auto CRUD operations for controller
+- Use `use \wing\core\traits\Authorize;` to enable login and RBAC check for controller
+- In your controller class should implement `setup` method to set current model
+## Controller example
 
 ```php
 <?php
@@ -41,27 +40,33 @@ class NewsController extends BaseController
 
     public function setup()
     {
-        // 开启自动CRUD操作时,需要设置当前控制器操作的模型类
+        // When AutoCRUD enabled you should configure the Model class
         $this->setModel(News::class);
-        // 设置当前session的用户模型实例
-        // 必须继承\wing\core\BaseModel类,
-        // 且实现\wing\core\UserInterface接口
+        // Set the uncheck(Skip RBAC check) action for current controller
+        $this->setUncheckAction('dict');
+        // Or you can set all uncheck rules for whole application
+        $this->setUncheckRules([
+            'module' => ['']
+        ])
+        // Set current use model for Authorize trait
+        // The User model must extend \wing\core\BaseModel and implement \wing\core\UserInterface,
+        // Help your self to get the user id form request token etc.
         $this->session->set(User::find(1));
     }
 
-    // 启用自动CRUD后, 以下 action 即可自动工作
+    // When AuthCRUD enabled, Follow controller action can be used
     /*
      news/create
      news/update
      news/index
      news/delete
      news/detail
-     news/export (需要在模型配置导出字段)
+     news/export (TODO)
      */
 
      /**
-      * 自定义创建数据前的操作
-      * @param array $data 数据数组
+      * Callback before create data
+      * @param array $data model data
       */
      public function beforeCreate($data) {
         $data['user_id'] = $this->session->getUserId();
@@ -70,9 +75,9 @@ class NewsController extends BaseController
 }
 ```
 
-## 模型代码示例
+## Model example
 
-在 think-orm 模型的基础上扩展增加了部分模型属性, 用于自动 CRUD 和导出
+The BaseModel class is extended from think-orm/Model, Add some new attributes or method for AutoCrud CRUD
 
 ```php
 <?php
@@ -122,11 +127,11 @@ class News extends BaseModel {
      * @var array
      */
     public static array $messages = [
-        'cate_id.require' => '请选择分类',
-        'cate_id.integer' => '请选择分类',
-        'title.require'   => '请输入标题',
-        'title.max'       => '标题不能超过240字',
-        'content.require' => '请输入内容'
+        'cate_id.require' => 'Please select a category',
+        'cate_id.integer' => 'Please select a category',
+        'title.require'   => 'Please enter a title',
+        'title.max'       => 'The title is too long',
+        'content.require' => 'Please enter content'
     ];
 
     /**
@@ -141,11 +146,11 @@ class News extends BaseModel {
     /**
      * @var int
      */
-    public static int $pageSize = 10; // 列表页每页显示条数
+    public static int $pageSize = 10; // Page size for index
 
     /**
      * @var bool
      */
-    public static bool $cache = false; // 列表页是否开启缓存
+    public static bool $cache = false; // Cache for index
 }
 ```
