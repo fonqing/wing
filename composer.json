@@ -14,7 +14,8 @@
     "php": ">=8.1",
     "ext-redis": "*",
     "ext-curl": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-bcmath": "*"
   },
   "require-dev": {
     "topthink/framework": "^8.0"

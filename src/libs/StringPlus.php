@@ -2,6 +2,7 @@
 
 namespace wing\libs;
 use Closure;
+use think\facade\Db;
 
 class StringPlus
 {
@@ -96,6 +97,74 @@ class StringPlus
             return uniqid($prefix);
         }
         return $prefix . substr(bin2hex($bytes), 0, $length);
+    }
+
+    /**
+     * Generate uuid
+     *
+     * @param bool $strict use MySQL UUID()
+     * @return string
+     */
+    public static function uuid(bool $strict = false): string
+    {
+        if ($strict){
+            return Db::query("SELECT UUID() as uuid")[0]['uuid'] ?? '';
+        } else {
+            $timeFunc = function_exists('hrtime')? 'hrtime' : 'microtime';
+            $string = bcmul((string)$timeFunc(true), '1000', 0);
+            $string = base_convert($string, 10, 16);
+            $string .= bin2hex(self::uniqueId('',ceil((32 - strlen($string))/2)));
+            if(strlen($string) < 32) {
+                $string = str_pad($string, 32, '0');
+            }
+            return substr ( $string, 0, 8 ) . '-'
+                . substr ( $string, 8, 4 ) . '-'
+                . substr ( $string, 12, 4 ) . '-'
+                . substr ( $string, 16, 4 ) . '-'
+                . substr ( $string, 20, 12 );
+        }
+    }
+
+    /**
+     * 输出空格
+     *
+     * @param int $number
+     * @param string $after
+     * @return string
+     */
+    public static function space(int $number, string $after = ''): string
+    {
+        return str_repeat(' ', $number) . $after;
+    }
+
+    /**
+     * 格式化字符串
+     *
+     * @param string $template
+     * @param array $args
+     * @return string
+     */
+    public static function formatString(string $template, array $args): string
+    {
+        foreach ($args as $key => $value) {
+            $template = str_replace('{' . $key . '}', $value, $template);
+        }
+        return $template;
+    }
+
+    /**
+     * 字典数组转字符串
+     * @param array $arr
+     * @param int $space
+     * @return string
+     */
+    public static function dictArray(array $arr, int $space = 0): string
+    {
+        $str = '';
+        foreach ($arr as $key => $value) {
+            $str .= self::space($space, self::formatString('"{0}" => "{1}",', [$key, $value])) . PHP_EOL;
+        }
+        return trim($str);
     }
 
     /**
