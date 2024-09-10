@@ -184,6 +184,30 @@ trait Authorize
     }
 
     /**
+     * @param array $actions
+     * @return void
+     */
+    protected function setUncheckActions(array $actions): void
+    {
+        if(empty($actions) || !is_array($actions)) {
+            return;
+        }
+        $module = $this->getModuleName();
+        $contr = $this->getControllerName();
+        foreach ($actions as $action) {
+            if (array_key_exists($module, $this->uncheckRules)) {
+                $this->uncheckRules[$module][] = [
+                    $contr . '/' . $action
+                ];
+            } else {
+                $this->uncheckRules[$module] = [
+                    $contr . '/' . $action
+                ];
+            }
+        }
+    }
+
+    /**
      * Check if the action is in rules.
      *
      * @param string $c
