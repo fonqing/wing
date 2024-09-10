@@ -267,7 +267,15 @@ class BaseModel extends Model
         if (!empty($fields)) {
             $query = Request::param();
             foreach ($fields as $field => $rule) {
+                if ($rule === 'keyword' || StringPlus::strContains($field, '|')){
+                    $keys = $field;
+                    $field = 'keyword';
+                    $rule = 'like';
+                }
                 $value = $query[$field] ?? '';
+                if (isset($keys)) {
+                    $field = $keys;
+                }
                 if (empty($value) && 0 !== $value) {
                     continue;
                 }
