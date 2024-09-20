@@ -245,6 +245,6 @@ class StringPlus
 
     public static function joinPath(string $path, string $append): string
     {
-        return rtrim($path, '/'). '/'. ltrim($append, '/');
+        return rtrim(trim($path), '/\\'). DIRECTORY_SEPARATOR. ltrim(trim($append), '/\\');
     }
 }
