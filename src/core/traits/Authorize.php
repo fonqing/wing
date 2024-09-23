@@ -173,9 +173,7 @@ trait Authorize
         $module = $this->getModuleName();
         $contr = $this->getControllerName();
         if(array_key_exists($module, $this->uncheckRules)) {
-            $this->uncheckRules[$module][] = [
-                $contr . '/' . $action
-            ];
+            $this->uncheckRules[$module][] = $contr . '/' . $action;
         } else {
             $this->uncheckRules[$module] = [
                 $contr . '/' . $action
@@ -196,9 +194,7 @@ trait Authorize
         $contr = $this->getControllerName();
         foreach ($actions as $action) {
             if (array_key_exists($module, $this->uncheckRules)) {
-                $this->uncheckRules[$module][] = [
-                    $contr . '/' . $action
-                ];
+                $this->uncheckRules[$module][] = $contr . '/' . $action;
             } else {
                 $this->uncheckRules[$module] = [
                     $contr . '/' . $action
