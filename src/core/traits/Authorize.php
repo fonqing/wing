@@ -3,6 +3,7 @@
 namespace wing\core\traits;
 
 use think\facade\Config;
+use think\helper\Str;
 use wing\core\BaseController;
 use wing\exception\BusinessException;
 use wing\libs\StringPlus;
@@ -121,7 +122,8 @@ trait Authorize
      */
     protected function getControllerName(): string
     {
-        $contr = $this->request->controller(true);
+        $contr = $this->request->controller();
+        $contr = Str::snake($contr);
         $contr = strtolower(trim(trim($contr), '/\\'));
         if (empty($contr)) {
             return 'index';
