@@ -50,7 +50,7 @@ trait Authorize
             // Get all user privileges
             $rules = $this->session->getPrivileges($module);
             // Check if the action is in rules
-            if ($this->isAllowed($contr, $action, $rules[$module] ?? [])) {
+            if ($this->isAllowed($contr, $action, $rules)) {
                 if (empty($params)) {
                     return true;
                 }
